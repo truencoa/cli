@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "truencoa_cli": {
-      "commandName": "Project",
-      "commandLineArgs": "\"D:\\Testing\\TrueNCOA Command Line Interface\\test_api_500.txt\" \"support@truencoa.com\" \"Winning90%\" \"https://api.testing.truencoa.com/\" true"
-    }
-  }
-}
