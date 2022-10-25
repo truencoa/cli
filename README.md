@@ -6,6 +6,7 @@
     <h2>Change Log</h2>
     <p><ul>
     <li>All TrueNCOA.com endpoints now require HTTPS</li>
+    <li>Endpoints are now:  https://api.testing.truencoa.com (testing) and https://api.truencoa.com (production)</li>
     <li>truencoa.exe is now truencoa_cli.exe</li>
     </ul></p>
     <h2>Overview</h2>
@@ -15,10 +16,10 @@
         <li>filename (required) - the fully qualified path and name to the input file (CSV, tab-delimited)</li>
         <li>id (required) - the API id or account user name/email address</li>
         <li>key (required) - the API key or account password</li>
-        <li>url (optional) - the API endpoint URL - defaults to https://app.truencoa.com/api (production) or https://app.testing.truencoa.com/api (testing)</li>
+        <li>url (optional) - the API endpoint URL - defaults to https://api.truencoa.com/ (production) or https://api.testing.truencoa.com/ (testing)</li>
         <li>download (optional) - automatically download the processed file - defaults to false, when set to true, the file will be downloaded and you will be charged automatically</li>
     </ul>
-    <p>Example:  truencoa_cli.exe "d:\myfile.txt" "email@address.com" "Password123$" "https://app.testing.truencoa.com/api/" false</p>
+    <p>Example:  truencoa_cli.exe "d:\myfile.txt" "email@address.com" "Password123$" "https://api.testing.truencoa.com/" false</p>
     <p>NOTE:  if you're using a batch (BAT) file to automate the process and store the command-line parameters, and your password contains a percent symbol (%), <a href="http://windowsitpro.com/windows-server/how-can-i-use-percent-symbol-batch-file">you need to add an additional percent symbol to make it work.</a></p>
     <h2>Input File</h2>
     <p>The input file (filename) needs to have the following fields defined:</p>
