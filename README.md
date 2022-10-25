@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>TrueNCOA Command Line Interface (CLI)</title>
-</head>
 <body>
     <h1>TrueNCOA Command Line Interface (CLI)</h1>
     <h2>Change Log</h2>
     <p><ul>
     <li>All TrueNCOA.com endpoints now require HTTPS</li>
     <li>truencoa.exe is now truencoa_cli.exe</li>
-    <li></li>
     </ul></p>
     <h2>Overview</h2>
     <p>For the latest documentation on the API or to customize this application, see <a href="http://truencoa.com/api" target="_blank">TrueNCOA</a></p>
