@@ -228,6 +228,7 @@ namespace truencoa_cli
                         }
                     }
 
+                    Thread.Sleep(5000);
                     using (WebClient wc = new WebClient())
                     {
                         List<string> reports = new List<string>() { "ncoa", "cass" };
