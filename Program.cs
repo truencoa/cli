@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Net;
@@ -68,6 +68,8 @@ namespace truencoa_cli
                     // make a random file name
                     tmpfilename = fi.Name.Replace(System.IO.Path.GetExtension(fi.Name), "") + "_" + DateTime.Now.Ticks;
 
+                    Console.WriteLine($"Uploading: {tmpfilename} to {url}");
+
                     // import records from file
                     StringBuilder data = new StringBuilder();
                     using (StreamReader sr = new StreamReader(filename))
@@ -88,8 +90,6 @@ namespace truencoa_cli
                             {
                                 using (WebClient wc = new WebClient())
                                 {
-                                    //wc.Headers["api_id"] = id;
-                                    //wc.Headers["api_key"] = key;
                                     wc.Headers["user_name"] = id;
                                     wc.Headers["password"] = key;
                                     wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
@@ -105,14 +105,12 @@ namespace truencoa_cli
                 // check to see if the file is ready to process
                 using (WebClient wc = new WebClient())
                 {
-                    //wc.Headers["api_id"] = id;
-                    //wc.Headers["api_key"] = key;
                     wc.Headers["user_name"] = id;
                     wc.Headers["password"] = key;
                     try
                     {
                         string json = wc.DownloadString(url + $"files/{tmpfilename}");
-                        file =  JsonConvert.DeserializeObject<File>(json);
+                        file = JsonConvert.DeserializeObject<File>(json);
                         if (file.Status != "Mapped" && file.RecordCount < 100)
                         {
                             Console.WriteLine($"The filename: {tmpfilename} is not in the correct status or does not contain at least 100 records");
@@ -129,8 +127,6 @@ namespace truencoa_cli
                 // submit for processing
                 using (WebClient wc = new WebClient())
                 {
-                    //wc.Headers["api_id"] = id;
-                    //wc.Headers["api_key"] = key;
                     wc.Headers["user_name"] = id;
                     wc.Headers["password"] = key;
                     wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
@@ -141,104 +137,111 @@ namespace truencoa_cli
                 bool processing = true;
                 while (processing)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10000);
                     using (WebClient wc = new WebClient())
                     {
-                        //wc.Headers["api_id"] = id;
-                        //wc.Headers["api_key"] = key;
                         wc.Headers["user_name"] = id;
                         wc.Headers["password"] = key;
                         string json = wc.DownloadString(url + $"files/{tmpfilename}");
                         file = JsonConvert.DeserializeObject<File>(json);
-                        processing = (file.Status == "Import" || file.Status == "Importing" || file.Status == "Parse" || file.Status == "Parsing" || file.Status == "Validate" || file.Status == "Validating" || file.Status == "Report" || file.Status == "Reporting" || file.Status == "Process" || file.Status == "Processing");
+                        Console.WriteLine(file.Status);
+                        processing = (file.Status == "Processing" || file.Status == "Cancelled" || file.Status == "Errored");
                     }
                 }
-
-                string exportfileid = null;
-                // submit for exporting
-                using (WebClient wc = new WebClient())
+                if (file.Status == "Cancelled" || file.Status == "Errored")
                 {
-                    //wc.Headers["api_id"] = id;
-                    //wc.Headers["api_key"] = key;
-                    wc.Headers["user_name"] = id;
-                    wc.Headers["password"] = key;
-                    wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                    string json = wc.UploadString(url + $"files/{tmpfilename}", "PATCH", $"status=export&suppress={suppress}");
-                    file = JsonConvert.DeserializeObject<File>(json);
-                    exportfileid = file.Id;
+                    throw new Exception($"{tmpfilename} has {file.Status}");
                 }
-
-                // wait for exporting to complete
-                bool exporting = true;
-                while (exporting)
+                else if (file.Status == "Processed")
                 {
-                    Thread.Sleep(1000);
+                    string exportfileid = null;
+                    // submit for exporting
                     using (WebClient wc = new WebClient())
                     {
-                        //wc.Headers["api_id"] = id;
-                        //wc.Headers["api_key"] = key;
                         wc.Headers["user_name"] = id;
                         wc.Headers["password"] = key;
-                        string json = wc.DownloadString(url + $"files/{exportfileid}");
+                        wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                        string json = wc.UploadString(url + $"files/{tmpfilename}", "PATCH", $"status=export&suppress={suppress}");
                         file = JsonConvert.DeserializeObject<File>(json);
-                        exporting = (file.Status == "Export" || file.Status == "Exporting");
+                        exportfileid = file.Id;
                     }
-                }
+                    
+                    Console.WriteLine($"Exporting");
 
-                if (download)
-                {
-
-                    int page = 1;
-                    int recordcount = 0;
-
-                    filename = $"{filename}.export.csv";
-
-                    if (System.IO.File.Exists(filename))
+                    // wait for exporting to complete
+                    bool exporting = true;
+                    while (exporting)
                     {
-                        System.IO.File.Delete(filename);
-                    }
-
-                    using (StreamWriter sw = new StreamWriter(filename))
-                    {
-                        while (page == 1 || (recordcount > 0))
-                        {
-                            using (WebClient wc = new WebClient())
-                            {
-                                //wc.Headers["api_id"] = id;
-                                //wc.Headers["api_key"] = key;
-                                wc.Headers["user_name"] = id;
-                                wc.Headers["password"] = key;
-                                string json = wc.DownloadString(url + $"files/{exportfileid}/records?page={page}&charge={charge}");
-                                var obj = JObject.Parse(json);
-                                var recordsjson = (string)obj["Records"].ToString();
-                                DataTable records = (DataTable)JsonConvert.DeserializeObject(recordsjson, (typeof(DataTable)));
-                                recordcount = records.Rows.Count;
-                                if (page == 1)
-                                {
-                                    IEnumerable<string> columnNames = records.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
-                                    sw.WriteLine(string.Join(",", columnNames));
-                                }
-                                foreach (DataRow row in records.Rows)
-                                {
-                                    IEnumerable<string> fields = row.ItemArray.Select(field => string.Concat("\"", field.ToString().Replace("\"", "\"\""), "\""));
-                                    sw.WriteLine(string.Join(",", fields));
-                                }
-                            }
-                            page++;
-                        }
-                    }
-
-                    Thread.Sleep(5000);
-                    using (WebClient wc = new WebClient())
-                    {
-                        List<string> reports = new List<string>() { "ncoa", "cass" };
-                        foreach (string report in reports)
+                        Thread.Sleep(1000);
+                        using (WebClient wc = new WebClient())
                         {
                             wc.Headers["user_name"] = id;
                             wc.Headers["password"] = key;
-                            byte[] pdf = wc.DownloadData(url + $"files/{tmpfilename}/reports?report_name={report}&format=pdf");
-                            System.IO.File.WriteAllBytes($"{filename}.{report}.pdf", pdf);
+                            string json = wc.DownloadString(url + $"files/{exportfileid}");
+                            file = JsonConvert.DeserializeObject<File>(json);
+                            exporting = (file.Status == "Export" || file.Status == "Exporting");
                         }
+                    }
+
+                    Console.WriteLine($"Exported");
+
+                    if (download)
+                    {
+
+                        int page = 1;
+                        int recordcount = 0;
+                        
+                        Console.WriteLine($"Downloading");
+
+                        filename = $"{filename}.export.csv";
+
+                        if (System.IO.File.Exists(filename))
+                        {
+                            System.IO.File.Delete(filename);
+                        }
+
+                        using (StreamWriter sw = new StreamWriter(filename))
+                        {
+                            while (page == 1 || (recordcount > 0))
+                            {
+                                using (WebClient wc = new WebClient())
+                                {
+                                    wc.Headers["user_name"] = id;
+                                    wc.Headers["password"] = key;
+                                    string json = wc.DownloadString(url + $"files/{exportfileid}/records?page={page}&charge={charge}");
+                                    var obj = JObject.Parse(json);
+                                    var recordsjson = (string)obj["Records"].ToString();
+                                    DataTable records = (DataTable)JsonConvert.DeserializeObject(recordsjson, (typeof(DataTable)));
+                                    recordcount = records.Rows.Count;
+                                    if (page == 1)
+                                    {
+                                        IEnumerable<string> columnNames = records.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+                                        sw.WriteLine(string.Join(",", columnNames));
+                                    }
+                                    foreach (DataRow row in records.Rows)
+                                    {
+                                        IEnumerable<string> fields = row.ItemArray.Select(field => string.Concat("\"", field.ToString().Replace("\"", "\"\""), "\""));
+                                        sw.WriteLine(string.Join(",", fields));
+                                    }
+                                }
+                                page++;
+                            }
+                        }
+
+                        Thread.Sleep(5000);
+                        using (WebClient wc = new WebClient())
+                        {
+                            List<string> reports = new List<string>() { "ncoa", "cass" };
+                            foreach (string report in reports)
+                            {
+                                wc.Headers["user_name"] = id;
+                                wc.Headers["password"] = key;
+                                byte[] pdf = wc.DownloadData(url + $"files/{tmpfilename}/reports?report_name={report}&format=pdf");
+                                System.IO.File.WriteAllBytes($"{filename}.{report}.pdf", pdf);
+                            }
+                        }
+
+                        Console.WriteLine($"Downloaded");
                     }
                 }
             }
