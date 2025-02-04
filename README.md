@@ -39,7 +39,7 @@
         <li>individual_full_name - do not include individual_first_name and individual_last_name if you are using this</li>
         <li>address_country_code - this can be blank or set to 'US'</li>
     </ul>
-    <p>Using with Mailer Name</p>
+    <p>Using with List Owner/Mailer Name</p>
     <p>If your organization is registered as an agency, meaning you are a mail shop, printer, or another business that provides mailing services on behalf or for other customers, then your organization is an agency.  The USPS requires agencys to provide the list owner/mailer name on the Processing Acknowlegment Form (PAF).  This can be done easily by specifiying the list owner/mailer name as part of the file name.  For example, if the file name is "mail_file_234.csv", but you need to specify the list owner's/mailer's name, you can simply embed the name like "Nonproft Organization" in the file name as "mail_file_234[Nonproft Organization].csv" - where anything contained in the square brackets will be used as the list owner/mailer name on the PAF</p>
     <h2>Payment</h2>
     <p>You will automatically be charged if the "download" parameter is set to true.  If you do not have any credits available, the export file will not be downloaded.  You can login to the app at the URL you submitted the file to in order to view your credits.</p>
