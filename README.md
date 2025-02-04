@@ -42,5 +42,20 @@
     <p>You will automatically be charged if the "download" parameter is set to true.  If you do not have any credits available, the export file will not be downloaded.  You can login to the app at the URL you submitted the file to in order to view your credits.</p>
     <h2>Output File</h2>
     <p>The export file will be written back to the input file folder automatically with the same input file name with ".export.csv" added.</p>
+    <h2>Quickstart</h2>
+    <ol>
+        <li>Make sure you have a TrueNCOA account and have access to the username and password</li>
+        <li>Create a processing folder on you system, like "c:\temp\truencoa"</li>
+        <li>Download the TrueNCOA CLI application and unzip the contents to the processing folder</li>
+        <li>Create an input file using the instructions above and at least 100 distinct names and addresses and place in the processing folder</li>
+        <li>Create a batch file (truencoa.bat) using a text editor and save it to the processing folder with the following command: <br/>
+            truencoa_cli.exe "{full path to your file}" "{username}" "{password}" "https://api.truencoa.com/" false
+        </li>
+        <li>Save and close the text editor</li>
+        <li>Open a command prompt by pressing CTRL+R, then entering in "cmd" (without quotes)</li>
+        <li>Type: cd "{full path to your processing folder}"</li>
+        <li>Type: truencoa.bat and hit enter</li>
+        <li>Within 4-7 minutes you should see your completed file on https://app.truencoa.com</li>
+    </ol>
 </body>
 </html>
