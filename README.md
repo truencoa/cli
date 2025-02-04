@@ -8,7 +8,7 @@
     <li>All TrueNCOA.com endpoints now require HTTPS</li>
     <li>Endpoints are now:  https://api.testing.truencoa.com (testing) and https://api.truencoa.com (production)</li>
     <li>[NEW] Built-in support for multiple files</li>
-    <li>[NEW] Built-in support for mailer</li>
+    <li>[NEW] Built-in support for list owner/mailer name</li>
     </ul></p>
     <h2>Overview</h2>
     <p>For the latest documentation on the API or to customize this application, see <a href="http://truencoa.com/api" target="_blank">TrueNCOA</a></p>
@@ -50,7 +50,7 @@
         <li>Make sure you have a TrueNCOA account and have access to the username and password</li>
         <li>Create a processing folder on you system, like "c:\temp\truencoa"</li>
         <li>Download the TrueNCOA CLI application and unzip the contents to the processing folder</li>
-        <li>Create an input file (use mailer name in the file name if your organization is registered as an agency) using the instructions above and at least 100 distinct names and addresses and place in the processing folder</li>
+        <li>Create an input file (use list owner/mailer name in the file name if your organization is registered as an agency) using the instructions above and at least 100 distinct names and addresses and place in the processing folder</li>
         <li>Create a batch file (truencoa.bat) using a text editor and save it to the processing folder with the following command: <br/>
             truencoa_cli.exe "{full path to your file}" "{username}" "{password}" "https://api.truencoa.com/" false
         </li>
