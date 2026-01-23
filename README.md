@@ -22,6 +22,7 @@
     <p>Example:  truencoa_cli.exe "d:\myfile.txt" "email@address.com" "Password123$" "https://api.testing.truencoa.com/" false</p>
     <p>NOTE:  if you're using a batch (BAT) file to automate the process and store the command-line parameters, and your password contains a percent symbol (%), <a href="http://windowsitpro.com/windows-server/how-can-i-use-percent-symbol-batch-file">you need to add an additional percent symbol to make it work.</a></p>
     <h2>Input File</h2>
+    <p>The input file (filename) needs to be TAB delimited.</p>
     <p>The input file (filename) needs to have the following fields defined:</p>
     <ul>
         <li>individual_id - your unique id</li>
